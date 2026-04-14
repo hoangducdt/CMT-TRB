@@ -4,9 +4,335 @@
 <head class="head">
     <meta charset="UTF-8">
     <title>CMT-TRB</title>
+    <style>
+        /* ── Reset ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ── Loading Overlay ── */
+        #cmt-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: #050a10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            transition: opacity 0.55s cubic-bezier(.4,0,.2,1),
+                        visibility 0.55s cubic-bezier(.4,0,.2,1);
+        }
+
+        #cmt-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* ── Grid bg ── */
+        #cmt-loader::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,220,255,.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,220,255,.045) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+            pointer-events: none;
+        }
+
+        /* ── Radial glow ── */
+        #cmt-loader::after {
+            content: '';
+            position: absolute;
+            width: 520px; height: 520px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,220,255,.10) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: .6; transform: translate(-50%,-50%) scale(1); }
+            50%       { opacity: 1;  transform: translate(-50%,-50%) scale(1.12); }
+        }
+
+        /* ── Logo block ── */
+        .loader-logo {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .loader-logo-hex {
+            width: 72px; height: 72px;
+            margin: 0 auto 18px;
+            position: relative;
+            animation: hexSpin 8s linear infinite;
+        }
+
+        @keyframes hexSpin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .loader-logo-hex svg { width: 100%; height: 100%; }
+
+        .loader-title {
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: .22em;
+            color: #00dcff;
+            text-shadow: 0 0 24px rgba(0,220,255,.55), 0 0 48px rgba(0,220,255,.2);
+            animation: titleFlicker 4s ease-in-out infinite;
+        }
+
+        @keyframes titleFlicker {
+            0%, 90%, 100% { opacity: 1; }
+            92%           { opacity: .82; }
+            94%           { opacity: 1; }
+            96%           { opacity: .88; }
+        }
+
+        .loader-subtitle {
+            margin-top: 6px;
+            font-size: .72rem;
+            letter-spacing: .38em;
+            color: rgba(0,220,255,.45);
+            text-transform: uppercase;
+        }
+
+        /* ── Progress bar ── */
+        .loader-bar-wrap {
+            position: relative;
+            z-index: 1;
+            width: 280px;
+            margin-bottom: 16px;
+        }
+
+        .loader-bar-track {
+            width: 100%;
+            height: 2px;
+            background: rgba(0,220,255,.12);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loader-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00dcff, #00ffb0);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0,220,255,.7);
+            transition: width .35s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* Shimmer sweep on bar */
+        .loader-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 40px; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+            animation: barShimmer 1.4s linear infinite;
+        }
+
+        @keyframes barShimmer {
+            from { transform: translateX(-40px); }
+            to   { transform: translateX(40px); }
+        }
+
+        /* ── Status line ── */
+        .loader-status {
+            position: relative;
+            z-index: 1;
+            font-size: .68rem;
+            letter-spacing: .08em;
+            color: rgba(0,220,255,.4);
+            height: 18px;
+            text-align: center;
+            transition: opacity .2s;
+        }
+
+        .loader-status.flash {
+            color: rgba(0,220,255,.75);
+        }
+
+        /* ── Corner decorations ── */
+        .loader-corner {
+            position: absolute;
+            width: 22px; height: 22px;
+            border-color: rgba(0,220,255,.25);
+            border-style: solid;
+        }
+        .loader-corner.tl { top:20px; left:20px;  border-width: 2px 0 0 2px; }
+        .loader-corner.tr { top:20px; right:20px; border-width: 2px 2px 0 0; }
+        .loader-corner.bl { bottom:20px; left:20px;  border-width: 0 0 2px 2px; }
+        .loader-corner.br { bottom:20px; right:20px; border-width: 0 2px 2px 0; }
+
+        /* ── Dots indicator ── */
+        .loader-dots {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 7px;
+            margin-top: 22px;
+        }
+        .loader-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: rgba(0,220,255,.2);
+            animation: dotPop .9s ease-in-out infinite;
+        }
+        .loader-dot:nth-child(2) { animation-delay: .15s; }
+        .loader-dot:nth-child(3) { animation-delay: .30s; }
+
+        @keyframes dotPop {
+            0%, 100% { background: rgba(0,220,255,.18); transform: scale(1); }
+            50%       { background: rgba(0,220,255,.85); transform: scale(1.4);
+                        box-shadow: 0 0 8px rgba(0,220,255,.6); }
+        }
+
+        /* ── Scan line effect ── */
+        .loader-scan {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0,0,0,.06) 3px,
+                rgba(0,0,0,.06) 4px
+            );
+            pointer-events: none;
+            opacity: .35;
+        }
+
+        @media screen and (max-width: 768px) {
+            /* Thu nhỏ vầng sáng background để không bị tràn viền */
+            #cmt-loader::after {
+                width: 100vw;
+                height: 100vw;
+                max-width: 400px;
+                max-height: 400px;
+            }
+
+            /* Thu nhỏ Logo Hexagon một chút */
+            .loader-logo {
+                margin-bottom: 24px;
+            }
+            .loader-logo-hex {
+                width: 56px;
+                height: 56px;
+                margin: 0 auto 12px;
+            }
+
+            /* Giảm size chữ để vừa với màn hình hẹp */
+            .loader-title {
+                font-size: 1.6rem;
+                letter-spacing: 0.15em;
+            }
+            .loader-subtitle {
+                font-size: 0.65rem;
+                letter-spacing: 0.25em;
+            }
+
+            /* Chuyển thanh progress sang dạng tỷ lệ % thay vì fix cứng 280px */
+            .loader-bar-wrap {
+                width: 80%;
+                max-width: 280px;
+            }
+
+            /* Đẩy các góc trang trí (corner) vào gần lề hơn */
+            .loader-corner.tl { top: 12px; left: 12px; }
+            .loader-corner.tr { top: 12px; right: 12px; }
+            .loader-corner.bl { bottom: 12px; left: 12px; }
+            .loader-corner.br { bottom: 12px; right: 12px; }
+        }
+
+        @media screen and (max-width: 400px) {
+            /* Tối ưu thêm cho các màn hình điện thoại cực nhỏ (iPhone SE, mini...) */
+            .loader-title {
+                font-size: 1.35rem;
+            }
+            .loader-subtitle {
+                font-size: 0.55rem;
+            }
+            .loader-status {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <!-- ══ Loading overlay ══ -->
+    <div id="cmt-loader" role="status" aria-label="Loading CMT-TRB">
+        <!-- Corner accents -->
+        <div class="loader-corner tl"></div>
+        <div class="loader-corner tr"></div>
+        <div class="loader-corner bl"></div>
+        <div class="loader-corner br"></div>
+
+        <!-- Scanlines -->
+        <div class="loader-scan"></div>
+
+        <!-- Logo -->
+        <div class="loader-logo">
+            <div class="loader-logo-hex">
+                <svg viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Outer hex -->
+                    <polygon
+                        points="50,4 96,28 96,87 50,111 4,87 4,28"
+                        stroke="rgba(0,220,255,0.35)" stroke-width="1.5" fill="none"/>
+                    <!-- Middle hex -->
+                    <polygon
+                        points="50,16 84,34 84,81 50,99 16,81 16,34"
+                        stroke="rgba(0,220,255,0.18)" stroke-width="1" fill="none"/>
+                    <!-- Inner chip icon -->
+                    <rect x="33" y="38" width="34" height="34" rx="4"
+                          stroke="#00dcff" stroke-width="2" fill="rgba(0,220,255,0.07)"/>
+                    <!-- Chip pins left -->
+                    <line x1="23" y1="46" x2="33" y2="46" stroke="#00dcff" stroke-width="1.5"/>
+                    <line x1="23" y1="55" x2="33" y2="55" stroke="#00dcff" stroke-width="1.5"/>
+                    <line x1="23" y1="64" x2="33" y2="64" stroke="#00dcff" stroke-width="1.5"/>
+                    <!-- Chip pins right -->
+                    <line x1="67" y1="46" x2="77" y2="46" stroke="#00dcff" stroke-width="1.5"/>
+                    <line x1="67" y1="55" x2="77" y2="55" stroke="#00dcff" stroke-width="1.5"/>
+                    <line x1="67" y1="64" x2="77" y2="64" stroke="#00dcff" stroke-width="1.5"/>
+                    <!-- Center dot -->
+                    <circle cx="50" cy="55" r="5" fill="rgba(0,220,255,0.6)"
+                            stroke="#00dcff" stroke-width="1"/>
+                </svg>
+            </div>
+            <div class="loader-title">CMT-TRB</div>
+            <div class="loader-subtitle">System Initializing</div>
+        </div>
+
+        <!-- Progress -->
+        <div class="loader-bar-wrap">
+            <div class="loader-bar-track">
+                <div class="loader-bar-fill" id="loader-bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="loader-status" id="loader-status">Loading data modules...</div>
+
+        <!-- Animated dots -->
+        <div class="loader-dots">
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+        </div>
+    </div>
+
+    <!-- ══ App mount point ══ -->
     <div class="main-site"></div>
     <script src=".\scripts\js\main.js"></script>
 </body>
