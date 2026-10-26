@@ -4,8 +4,6 @@ Công cụ web tra cứu và hỗ trợ sửa chữa TIU dành cho nhóm **TRB-C
 
 **Phiên bản:** 2.0.0 · **Build:** 2026-10-26
 
-> Repo này chỉ chứa bản đã build để phát hành. Mã nguồn và dữ liệu gốc nằm ở repo phát triển riêng.
-
 ## Chức năng
 
 | Mục | Mô tả |
@@ -44,25 +42,6 @@ Dùng chung cho mọi công cụ:
 Mở trang GitHub Pages của repo này. Lần đầu trình duyệt tải khoảng 12 MB (phần lớn là ảnh TIU / IPN dạng WebP, đã nằm sẵn trong ứng dụng); các lần sau dùng bộ nhớ đệm.
 
 Yêu cầu trình duyệt hỗ trợ WebAssembly: Chrome / Edge / Firefox / Safari bản hiện hành. Mọi xử lý (đọc test data, đọc Excel…) diễn ra ngay trên máy, không gửi dữ liệu đi đâu.
-
-## Nội dung repo
-
-| File | Vai trò |
-| --- | --- |
-| `index.html` | Trang chính và màn hình tải |
-| `trb-helper-*_bg.wasm` | Toàn bộ ứng dụng (giao diện, dữ liệu, ảnh) dạng WebAssembly |
-| `trb-helper-*.js` | Đoạn nạp WebAssembly (sinh tự động) |
-| `loader-*.js` | Hiển thị tiến độ tải |
-| `favicon-*.svg` | Biểu tượng trên tab trình duyệt |
-| `.github/workflows/deploy.yml` | Tự động phát hành lên GitHub Pages mỗi khi push lên `main` |
-| `.nojekyll` | Tắt xử lý Jekyll của GitHub Pages |
-
-Phần `*` trong tên file là mã băm, đổi mỗi lần build để trình duyệt không dùng nhầm bản cũ.
-
-## Phát hành
-
-1. Lần đầu: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-2. Mỗi lần push lên `main`, workflow **Deploy GitHub Pages** tự đưa bản mới lên; xem tiến trình ở tab **Actions**.
 
 ## Tác giả
 
