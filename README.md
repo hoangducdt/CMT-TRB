@@ -9,7 +9,7 @@ Công cụ web tra cứu và hỗ trợ sửa chữa TIU dành cho nhóm **TRB-C
 ## Chức năng
 
 | Mục | Mô tả |
-|---|---|
+| --- | --- |
 | **Trang Chủ** | Thống kê số sản phẩm / thành viên / công cụ / IPN; lối tắt tới các công cụ và **Bản Đồ Module** (sơ đồ khu vực, tìm module theo tên, tự định vị khu TRB-CMT). |
 | **TRB-CMT** | Danh sách thành viên: WWID, điện thoại, gửi mail, chat Teams, trang Workers. |
 | **Thông Tin TIU** | Thông tin từng TIU: tên TIU trái/phải, sản phẩm chạy được, Part Number, Pogo Pin, Socket, linh kiện… Mở **pinmap đầy đủ** hoặc từng **group pin** đã tô sẵn. Linh kiện trùng IPN có thể bấm để xem chi tiết. |
@@ -48,11 +48,12 @@ Yêu cầu trình duyệt hỗ trợ WebAssembly: Chrome / Edge / Firefox / Safa
 ## Nội dung repo
 
 | File | Vai trò |
-|---|---|
+| --- | --- |
 | `index.html` | Trang chính và màn hình tải |
 | `trb-helper-*_bg.wasm` | Toàn bộ ứng dụng (giao diện, dữ liệu, ảnh) dạng WebAssembly |
 | `trb-helper-*.js` | Đoạn nạp WebAssembly (sinh tự động) |
 | `loader-*.js` | Hiển thị tiến độ tải |
+| `favicon-*.svg` | Biểu tượng trên tab trình duyệt |
 | `.github/workflows/deploy.yml` | Tự động phát hành lên GitHub Pages mỗi khi push lên `main` |
 | `.nojekyll` | Tắt xử lý Jekyll của GitHub Pages |
 
