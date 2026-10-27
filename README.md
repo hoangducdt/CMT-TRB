@@ -2,7 +2,7 @@
 
 Công cụ web tra cứu và hỗ trợ sửa chữa TIU dành cho nhóm **TRB-CMT – Intel Products Vietnam**: thông tin TIU / IPN, tìm channel fail từ test data, tra pin / channel và xem trực quan trên pinmap.
 
-**Phiên bản:** 2.0.0 · **Build:** 2026-10-26
+**Phiên bản:** 2.0.0 · **Build:** 2026-10-27
 
 ## Chức năng
 
