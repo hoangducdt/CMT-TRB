@@ -21,6 +21,14 @@ fn mime(name: &str) -> &'static str {
 }
 
 fn main() {
+    // Icon của exe (chỉ khi build cho Windows; cần rc.exe của Windows SDK — có sẵn trên runner windows-latest)
+    println!("cargo:rerun-if-changed=icon.ico");
+    if env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows")
+        && env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc")
+        && cfg!(windows)
+    {
+        embed_icon();
+    }
     let manifest = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     println!("cargo:rerun-if-env-changed=TRB_SITE_DIR");
     let site = env::var("TRB_SITE_DIR").map(PathBuf::from).unwrap_or_else(|_| manifest.join(".."));
@@ -45,3 +53,13 @@ fn main() {
     out.push_str("];\n");
     fs::write(PathBuf::from(env::var("OUT_DIR").unwrap()).join("site.rs"), out).unwrap();
 }
+
+#[cfg(windows)]
+fn embed_icon() {
+    let mut res = winresource::WindowsResource::new();
+    res.set_icon("icon.ico").set("ProductName", "TRB Helper").set("FileDescription", "TRB Helper");
+    res.compile().expect("Không nhúng được icon.ico");
+}
+
+#[cfg(not(windows))]
+fn embed_icon() {}
