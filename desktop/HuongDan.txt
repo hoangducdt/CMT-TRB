@@ -1,0 +1,19 @@
+TRB Helper - bản desktop (dự phòng dùng offline)
+================================================
+
+Dùng khi trang web TRB Helper không truy cập được. Ứng dụng chứa sẵn toàn bộ trang web,
+không cần mạng, không cần cài đặt.
+
+Cách dùng
+1. Giải nén cả thư mục ra một chỗ cố định (ví dụ Desktop hoặc D:\Tools).
+2. Mở "TRB Helper.exe".
+
+Yêu cầu
+- Windows 10 / 11 (dùng Microsoft Edge WebView2 có sẵn trong Windows).
+  Máy chưa có WebView2: tải "Evergreen Bootstrapper" tại trang Microsoft Edge WebView2.
+- TIU EEPROM: cắm PICkit Serial Analyzer trước khi bấm "Kết Nối PICkit".
+
+Ghi chú
+- Cài đặt (ngôn ngữ, theme), map EEPROM đã lưu… nằm ở %LOCALAPPDATA%\TRB Helper.
+- Link mail / Teams / trang web mở bằng ứng dụng mặc định của Windows.
+- Bản desktop được tạo cùng lúc với bản web: tải lại khi có phiên bản mới.

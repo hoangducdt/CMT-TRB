@@ -1,0 +1,54 @@
+name: Desktop app
+
+# Build "TRB Helper.exe" (Windows, WebView2) từ chính các file web trong repo này (nhúng vào exe),
+# rồi đính kèm TRB-Helper-Desktop.zip vào GitHub Release v<version> (version lấy từ .trb-release).
+# Nút "Tải bản desktop" của trang chủ trỏ tới releases/latest/download/TRB-Helper-Desktop.zip.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desktop
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        shell: pwsh
+        run: |
+          $env:TRB_SITE_DIR = "${{ github.workspace }}"
+          cargo build --release --locked --manifest-path desktop/Cargo.toml
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Đóng gói
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path .trb-release -Pattern '^version=(.+)$').Matches[0].Groups[1].Value.Trim()
+          New-Item -ItemType Directory -Path 'pkg/TRB Helper' -Force | Out-Null
+          Copy-Item desktop/target/release/TRB-Helper.exe 'pkg/TRB Helper/TRB Helper.exe'
+          Copy-Item desktop/HuongDan.txt 'pkg/TRB Helper/HuongDan.txt'
+          Copy-Item LICENSE 'pkg/TRB Helper/LICENSE.txt'
+          Compress-Archive -Path 'pkg/TRB Helper' -DestinationPath TRB-Helper-Desktop.zip -Force
+          "TAG=v$version" >> $env:GITHUB_ENV
+
+      - name: Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" TRB-Helper-Desktop.zip --clobber
+          else
+            gh release create "$TAG" TRB-Helper-Desktop.zip --target "$GITHUB_SHA" --title "TRB Helper $TAG" \
+              --notes "TRB Helper bản desktop (Windows 10/11) — dự phòng dùng offline khi trang web không truy cập được. Tải TRB-Helper-Desktop.zip, giải nén và mở TRB Helper.exe."
+          fi

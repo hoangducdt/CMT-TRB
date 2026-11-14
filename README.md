@@ -2,7 +2,7 @@
 
 Công cụ web tra cứu và hỗ trợ sửa chữa TIU dành cho nhóm **TRB-CMT – Intel Products Vietnam**: thông tin TIU / IPN, tìm channel fail từ test data, tra pin / channel và xem trực quan trên pinmap.
 
-**Phiên bản:** 2.0.1 · **Build:** 2026-11-14
+**Phiên bản:** 2.1.0 · **Build:** 2026-11-14
 
 ## Chức năng
 
@@ -18,12 +18,17 @@ Công cụ web tra cứu và hỗ trợ sửa chữa TIU dành cho nhóm **TRB-C
 | **Dữ Liệu Pins** | Chọn sản phẩm / site / pin → bảng Channel, Linh kiện, HiFix và tô màu trên pinmap. |
 | **Thông Tin IPN** | Danh sách IPN thường dùng (Pogo Pin, socket, vật tư…) và các TIU dùng chung. |
 | **Web Thường Dùng** | Lối tắt tới các trang nội bộ hay dùng. |
-| **Trợ Giúp & Hướng Dẫn** | Hướng dẫn từng bước (có ảnh, bấm để phóng to) cho từng công cụ. |
 | **Thông Tin** | Thông tin tool owner, tiến độ công cụ và lịch sử phiên bản. |
+
+### Bố cục chung
+
+- Tiêu đề tab luôn ghim ở trên; nút **ⓘ** bên phải mở / đóng panel thông tin của tab với các mục **Thông tin**, **Hướng dẫn** (từng bước, có ảnh, bấm để phóng to) và **Nhật ký** (TIU EEPROM).
+- Ở các tab dạng thẻ (TRB-CMT, Thông Tin TIU, Thông Tin IPN, Web Thường Dùng), bấm ảnh hoặc nút ⓘ của thẻ để xem chi tiết ở panel bên phải, bấm lại để ẩn; các nút icon trên thẻ mở nhanh mail, Teams, pinmap, trang web…
+- Tiến trình đang chạy hiện thành thanh tiến trình dưới tiêu đề; trạng thái của tab (kết nối PICkit, số pin, chú giải lịch ca…) nằm giữa thanh chân trang.
 
 ### Bản đồ pin trực quan
 
-Dùng chung cho mọi công cụ:
+Dùng chung cho mọi công cụ, hiển thị như một tab (thanh công cụ trên tiêu đề, số pin ở chân trang):
 
 - Tô màu pin được chọn, thêm pin tuỳ chọn, xoá màu; sao chép danh sách pin đang tô.
 - Lật ngang / dọc, xoay trái / phải, tăng / giảm khoảng cách pin, zoom bằng con lăn, kéo để di chuyển.
@@ -42,6 +47,14 @@ Dùng chung cho mọi công cụ:
 Mở trang GitHub Pages của repo này. Lần đầu trình duyệt tải khoảng 12 MB (phần lớn là ảnh TIU / IPN dạng WebP, đã nằm sẵn trong ứng dụng); các lần sau dùng bộ nhớ đệm.
 
 Yêu cầu trình duyệt hỗ trợ WebAssembly: Chrome / Edge / Firefox / Safari bản hiện hành. Mọi xử lý (đọc test data, đọc Excel…) diễn ra ngay trên máy, không gửi dữ liệu đi đâu.
+
+## Bản desktop (dự phòng offline)
+
+Khi trang web không truy cập được, dùng bản desktop cho Windows 10 / 11: bấm nút tải xuống (icon) ở góc phải tiêu đề Trang Chủ (hoặc tải `TRB-Helper-Desktop.zip` trong mục Releases của repo này), giải nén rồi mở `TRB Helper.exe`.
+
+- Ứng dụng có cửa sổ riêng, chứa sẵn toàn bộ trang, không cần mạng và không cần cài đặt (dùng Microsoft Edge WebView2 có sẵn trong Windows).
+- Đủ các chức năng như bản web, kể cả **TIU EEPROM** (kết nối PICkit Serial Analyzer trực tiếp qua USB).
+- Cài đặt và map EEPROM đã lưu nằm ở `%LOCALAPPDATA%\TRB Helper`.
 
 ## Tác giả
 
