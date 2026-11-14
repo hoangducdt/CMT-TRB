@@ -1,0 +1,27 @@
+[package]
+name = "trb-helper-desktop"
+version = "2.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+build = "build.rs"
+description = "TRB Helper bản desktop (Windows, WebView2): nhúng bản web đã build, dùng offline"
+
+# Crate độc lập (không thuộc workspace của web/)
+[workspace]
+
+[[bin]]
+name = "TRB-Helper"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[dependencies]
+wry = "0.57.2"
+tao = "0.37.2"
+hidapi = { version = "2", default-features = false, features = ["windows-native"] }
