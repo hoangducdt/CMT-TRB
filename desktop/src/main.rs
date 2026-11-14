@@ -15,7 +15,7 @@ use std::process::Command;
 use tao::dpi::LogicalSize;
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
-use tao::window::WindowBuilder;
+use tao::window::{Icon, WindowBuilder};
 use wry::http::{Request, Response, StatusCode, header};
 use wry::{NewWindowResponse, WebContext, WebViewBuilder};
 
@@ -26,6 +26,9 @@ include!(concat!(env!("OUT_DIR"), "/site.rs"));
 
 /// `navigator.hid` giả lập (TIU EEPROM) — chạy trước mọi script của trang.
 const HID_SHIM: &str = include_str!("hid_shim.js");
+
+/// Icon cửa sổ / taskbar: 64×64 RGBA thô (sinh từ favicon cùng lúc với icon.ico).
+const WINDOW_ICON: &[u8] = include_bytes!("../icon.rgba");
 
 /// Trang đầu: giao thức tuỳ biến `trb` (Windows ánh xạ sang `http://trb.localhost/`).
 #[cfg(windows)]
@@ -41,6 +44,7 @@ fn main() -> wry::Result<()> {
         .with_title("TRB Helper")
         .with_inner_size(LogicalSize::new(1440.0, 900.0))
         .with_min_inner_size(LogicalSize::new(400.0, 500.0))
+        .with_window_icon(Icon::from_rgba(WINDOW_ICON.to_vec(), 64, 64).ok())
         .build(&event_loop)
         .expect("Không tạo được cửa sổ");
 

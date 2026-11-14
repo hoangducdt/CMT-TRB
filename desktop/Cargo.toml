@@ -25,3 +25,7 @@ strip = true
 wry = "0.57.2"
 tao = "0.37.2"
 hidapi = { version = "2", default-features = false, features = ["windows-native"] }
+
+# Icon của file exe (Windows Explorer / taskbar): nhúng icon.ico qua tài nguyên Windows
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
