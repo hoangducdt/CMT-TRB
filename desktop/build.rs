@@ -1,4 +1,4 @@
-//! Nhúng các file của bản web đã build (index.html, *.js, *.wasm, *.svg) vào exe.
+//! Nhúng các file của bản web đã build (index.html, *.js, *.wasm, *.svg, ảnh hướng dẫn `guides/*.bin`) vào exe.
 //! Thư mục web: biến môi trường `TRB_SITE_DIR`, mặc định là thư mục cha (gốc repo release).
 
 use std::env;
@@ -35,18 +35,24 @@ fn main() {
     let site = site.canonicalize().unwrap_or_else(|e| panic!("Không tìm thấy thư mục web '{}': {e}", site.display()));
     println!("cargo:rerun-if-changed={}", site.display());
 
-    let mut files: Vec<PathBuf> = fs::read_dir(&site)
-        .expect("Không đọc được thư mục web")
-        .filter_map(|e| e.ok().map(|e| e.path()))
-        .filter(|p| p.is_file())
-        .filter(|p| matches!(p.extension().and_then(|e| e.to_str()), Some("html" | "js" | "wasm" | "svg" | "css" | "png" | "ico")))
-        .collect();
+    // Các file ở gốc + thư mục ảnh hướng dẫn `guides/` (tệp đã xáo trộn, app tải khi mở tab Hướng dẫn)
+    let list = |dir: &PathBuf, exts: &[&str]| -> Vec<PathBuf> {
+        fs::read_dir(dir)
+            .map(|r| {
+                r.filter_map(|e| e.ok().map(|e| e.path()))
+                    .filter(|p| p.is_file() && p.extension().and_then(|e| e.to_str()).is_some_and(|e| exts.contains(&e)))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    let mut files = list(&site, &["html", "js", "wasm", "svg", "css", "png", "ico"]);
+    files.extend(list(&site.join("guides"), &["bin"]));
     files.sort();
     assert!(files.iter().any(|p| p.file_name().is_some_and(|n| n == "index.html")), "Thiếu index.html trong '{}'", site.display());
 
     let mut out = String::from("/// (đường dẫn URL, Content-Type, nội dung)\npub static FILES: &[(&str, &str, &[u8])] = &[\n");
     for p in &files {
-        let name = p.file_name().unwrap().to_string_lossy();
+        let name = p.strip_prefix(&site).unwrap().to_string_lossy().replace('\\', "/");
         println!("cargo:rerun-if-changed={}", p.display());
         let _ = writeln!(out, "    (\"/{name}\", \"{}\", include_bytes!({:?})),", mime(&name), p.display().to_string());
     }
